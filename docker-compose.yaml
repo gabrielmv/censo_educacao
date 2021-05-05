@@ -1,0 +1,22 @@
+version: '2'
+
+services:
+  postgresql:
+    image: postgres:10.12-alpine
+    container_name: postgresql
+    restart: always
+    networks:
+      - censo
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./config/postgresql/share/files/dbms/pg-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRESQL_DATABASE=postgres
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRES_PASSWORD=postgres
+
+networks:
+  censo:
+    name: censo
+    driver: bridge

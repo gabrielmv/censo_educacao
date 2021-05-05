@@ -1,0 +1,37 @@
+FROM centos
+
+ENV MAVEN=https://aws-glue-etl-artifacts.s3.amazonaws.com/glue-common/apache-maven-3.6.0-bin.tar.gz
+ENV SPARK=https://aws-glue-etl-artifacts.s3.amazonaws.com/glue-1.0/spark-2.4.3-bin-hadoop2.8.tgz
+ 
+RUN mkdir spark
+RUN yum install -y python3 java-1.8.0-openjdk java-1.8.0-openjdk-devel tar git wget zip
+RUN ln -s /usr/bin/python3 /usr/bin/python
+RUN ln -s /usr/bin/pip3 /usr/bin/pip
+RUN pip install pandas openpyxl
+
+WORKDIR ./spark
+
+RUN wget $SPARK
+RUN wget $MAVEN
+RUN tar zxfv apache-maven-3.6.0-bin.tar.gz
+RUN tar zxfv spark-2.4.3-bin-hadoop2.8.tgz
+RUN rm spark-2.4.3-bin-hadoop2.8.tgz
+RUN rm apache-maven-3.6.0-bin.tar.gz
+RUN mv $(rpm -q -l java-1.8.0-openjdk-devel | grep "/bin$" | rev | cut -d"/" -f2- |rev) /usr/lib/jvm/jdk
+
+ENV SPARK_HOME /spark/spark-2.4.3-bin-spark-2.4.3-bin-hadoop2.8
+ENV MAVEN_HOME /spark/apache-maven-3.6.0
+ENV JAVA_HOME /usr/lib/jvm/jdk
+ENV PATH $PATH:$MAVEN_HOME/bin:$SPARK_HOME/bin:$JAVA_HOME/bin
+ 
+RUN yum clean all
+RUN rm -rf /var/cache/yum
+
+ENV PATH=$PATH:$SPARK_HOME/bin
+ENV PYSPARK_SUBMIT_ARGS="--jars $SPARK_HOME/jars/* pyspark-shell"
+
+COPY src/ /app/
+
+WORKDIR /app
+
+ENTRYPOINT ["spark-submit", "/app/raw_to_stage.py"]
