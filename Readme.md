@@ -128,3 +128,5 @@ Qual a distribuição de cores/raças (Branca, Pretas, Pardas, Amarelas e Indíg
 ## Known Issues
 
 A principal melhoria no projeto seria na orquestração, foi realizada algumas tentativas de execução com airflow, destacando-se uma utilizando DockerOperator e outra utilizando SparkSubmitOperator. Os problemas encontrados foram principalmente na comunicação entre o Airflow e a Docker Engine utilizando Docker in Docker e na comunicação do airflow com o Spark cluster também criado em docker.
+
+Outra melhoria é melhorar o schema e nao manter todas as colunas como string e sim com os datatypes mais adequados.
